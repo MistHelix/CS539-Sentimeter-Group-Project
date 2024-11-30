@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.linalg import svd
+import pandas as pd
 
 
 class SVDModel:
@@ -17,10 +18,30 @@ class SVDModel:
         self.vt = None
         self.reduced_data = None
 
+    def preprocess_data(self):
+        """
+        Preprocess the data by encoding categorical features.
+        """
+        # Factorize categorical columns
+        categorical_columns = ['Gender', 'Platform', 'Dominant_Emotion']
+        for col in categorical_columns:
+            if col in self.dataframe.columns:
+                self.dataframe[col], _ = pd.factorize(self.dataframe[col])
+
+        # Drop irrelevant columns
+        if 'User_ID' in self.dataframe.columns:
+            self.dataframe = self.dataframe.drop(['User_ID'], axis=1)
+
+        # Ensure all data is numeric
+        self.dataframe = self.dataframe.astype(float)
+
     def fit(self):
         """
         Perform Singular Value Decomposition (SVD) on the dataset.
         """
+        # Preprocess the data
+        self.preprocess_data()
+
         # Convert the DataFrame to a NumPy array
         data_matrix = self.dataframe.to_numpy()
 
@@ -39,7 +60,6 @@ class SVDModel:
         # Select the top n_components
         u_reduced = self.u[:, :self.n_components]
         s_reduced = np.diag(self.s[:self.n_components])
-        vt_reduced = self.vt[:self.n_components, :]
 
         # Reduced data
         self.reduced_data = np.dot(u_reduced, s_reduced)

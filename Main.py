@@ -24,13 +24,9 @@ def main(kmeans=True):
     # Fix some issues in the dataframe
     dataframe.loc[dataframe['Gender'].apply(is_numeric_string), ['Age', 'Gender']] = \
         dataframe.loc[dataframe['Gender'].apply(is_numeric_string), ['Gender', 'Age']].values
-    # Factorize categorical columns
-    dataframe['Gender'], _ = pd.factorize(dataframe['Gender'])
-    dataframe['Platform'], _ = pd.factorize(dataframe['Platform'])
 
-    # Apply SVD for dimensionality reduction
-    n_components = 10  # Choose the desired number of components
-    svd_model = SVDModel(dataframe, n_components)
+    # Initialize SVD
+    svd_model = SVDModel(dataframe=dataframe, n_components=5)  # Adjust n_components as needed
     svd_model.fit()
     reduced_data = svd_model.transform()
 
