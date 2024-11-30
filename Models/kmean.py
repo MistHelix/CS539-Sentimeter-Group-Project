@@ -50,3 +50,4 @@ class kmean:
                 sum += math.pow(self.centroids.iloc[centroid].iloc[i-1]-row[i], 2)
             average_distance += math.sqrt(sum)
         print("K is ", self.k, " Distance:",average_distance/len(self.dataframe))
+        return average_distance/len(self.dataframe)
