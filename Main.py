@@ -27,7 +27,6 @@ def main(kmeans=True):
     # Factorize categorical columns
     dataframe['Gender'], _ = pd.factorize(dataframe['Gender'])
     dataframe['Platform'], _ = pd.factorize(dataframe['Platform'])
-    dataframe = dataframe.drop('User_ID', axis=1).astype(float)
 
     # Apply SVD for dimensionality reduction
     n_components = 10  # Choose the desired number of components
