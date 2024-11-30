@@ -1,7 +1,10 @@
+import numpy as np
 import pandas as pd
+from numpy.linalg._umath_linalg import svd
 from sklearn.metrics import silhouette_score, calinski_harabasz_score, davies_bouldin_score
 from Models.gmm import GMMCluster
-
+from Models.svd import SVDModel
+import kagglehub
 
 def is_numeric_string(val):
     try:
@@ -10,9 +13,9 @@ def is_numeric_string(val):
     except ValueError:
         return False
 
-
 def main():
-    dataframe = pd.read_csv("train.csv")
+    path = kagglehub.dataset_download("emirhanai/social-media-usage-and-emotional-well-being")
+    dataframe = pd.read_csv(path + "/train.csv")
     dataframe = dataframe.drop(['Dominant_Emotion'], axis=1)
     dataframe = dataframe.dropna()
 
@@ -20,10 +23,19 @@ def main():
     dataframe.loc[dataframe['Gender'].apply(is_numeric_string), ['Age', 'Gender']] = \
         dataframe.loc[dataframe['Gender'].apply(is_numeric_string), ['Gender', 'Age']].values
 
+    svd_model = SVDModel(dataframe=dataframe, n_components=5)  # Adjust n_components as needed
+    svd_model.fit()
+    reduced_data = svd_model.transform()
+
     # Factorize categorical columns
     dataframe['Gender'], _ = pd.factorize(dataframe['Gender'])
     dataframe['Platform'], _ = pd.factorize(dataframe['Platform'])
     dataframe = dataframe.drop('User_ID', axis=1).astype(float)
+
+    # Initialize SVD
+    svd_model = SVDModel(dataframe=dataframe, n_components=5)  # Adjust n_components as needed
+    svd_model.fit()
+    reduced_data = svd_model.transform()
 
     # Iterate over different values of k
     results = []
